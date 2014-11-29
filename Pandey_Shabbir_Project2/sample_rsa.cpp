@@ -57,7 +57,8 @@ void sample_key() {
     Base32Encoder pubkeysink(new FileSink("/Users/amd/Documents/Pandey_Shabbir_Project2/pubkey.txt"));
     Base32Encoder privatekeysink(new FileSink("/Users/amd/Documents/Pandey_Shabbir_Project2/privatekey.txt"));
 
-   // Base32Encoder pubkeysink(new FileSink("/Users/amd/Dropbox/Projects/Cryptography/Proj2/Crypt_project2/Pandey_Shabbir_Project2/pubkey.txt"));
+    // Base32Encoder privatekeysink(new FileSink("/Users/amd/Dropbox/Projects/Cryptography/Proj2/Crypt_project2/Pandey_Shabbir_Project2/privatekey.txt"));
+    // Base32Encoder pubkeysink(new FileSink("/Users/amd/Dropbox/Projects/Cryptography/Proj2/Crypt_project2/Pandey_Shabbir_Project2/pubkey.txt"));
     publicKey.DEREncode(pubkeysink);
     privateKey.DEREncode(privatekeysink);
     pubkeysink.MessageEnd();
