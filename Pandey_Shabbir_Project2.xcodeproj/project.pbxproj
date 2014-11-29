@@ -518,6 +518,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/5.6.2/lib",
 				);
+				MACOSX_DEPLOYMENT_TARGET = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -529,6 +530,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/5.6.2/lib",
 				);
+				MACOSX_DEPLOYMENT_TARGET = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
