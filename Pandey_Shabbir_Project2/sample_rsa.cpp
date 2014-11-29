@@ -7,14 +7,47 @@
 //
 
 
+
+#include "osrng.h"
+using CryptoPP::AutoSeededRandomPool;
+
 #include <iostream>
-using namespace std;
+using std::cout;
+using std::cerr;
+using std::endl;
+
+#include <string>
+using std::string;
+
+#include <cstdlib>
+using std::exit;
 
 #include "cryptlib.h"
-#include "rsa.h"
-#include "osrng.h"
-#include "files.h"
+using CryptoPP::Exception;
+
+#include "hex.h"
+using CryptoPP::HexEncoder;
+using CryptoPP::HexDecoder;
+
+#include "filters.h"
+using CryptoPP::StringSink;
+using CryptoPP::StringSource;
+using CryptoPP::AuthenticatedEncryptionFilter;
+using CryptoPP::AuthenticatedDecryptionFilter;
+
 #include "aes.h"
+using CryptoPP::AES;
+
+#include "gcm.h"
+using CryptoPP::GCM;
+
+#include "secblock.h"
+using CryptoPP::SecByteBlock;
+
+
+
+#include "rsa.h"
+#include "files.h"
 #include "modes.h"
 #include "base32.h"
 
@@ -135,9 +168,129 @@ void generate_aes_key(){
 
 
 
+/***************
+ **************/
+//int book_example(int argc, char* argv[])
+int book_example()
+{
+    AutoSeededRandomPool prng;
+    string plain = "GCM Mode Test";
+    string cipher, encoded, recovered;
+    
+    //generate key
+    SecByteBlock key(AES::DEFAULT_KEYLENGTH);
+    prng.GenerateBlock(key, key.size());
+    
+    // Pretty print key
+    encoded.clear();
+    StringSource(key, key.size(), true,
+                 new HexEncoder(
+                                new StringSink(encoded)
+                                ) // HexEncoder
+                 ); // StringSource
+    cout << "key: " << encoded << endl;
+    
+    
+    //generate iv
+    SecByteBlock iv(AES::BLOCKSIZE);
+    prng.GenerateBlock(iv, iv.size());
+    
+    // Pretty print iv
+    encoded.clear();
+    StringSource(iv, iv.size(), true,
+                 new HexEncoder(
+                                new StringSink(encoded)
+                                ) // HexEncoder
+                 ); // StringSource
+    cout << "iv: " << encoded << endl;
+    
+    
+    
+    /*********************************\
+     \*********************************/
+    
+    
+    
+    try
+    {
+        cout << "plain text: " << plain << endl;
+        
+        GCM< AES >::Encryption e;
+        e.SetKeyWithIV(key, key.size(), iv, iv.size());
+        
+        // The StreamTransformationFilter adds padding
+        //  as required. GCM and CBC Mode must be padded
+        //  to the block size of the cipher.
+        StringSource(plain, true,
+                     new AuthenticatedEncryptionFilter(e,
+                                                       new StringSink(cipher)
+                                                       ) // StreamTransformationFilter
+                     ); // StringSource
+    }
+    catch(const CryptoPP::Exception& e)
+    {
+        cerr << e.what() << endl;
+        exit(1);
+    }
+    
+    /*********************************\
+     \*********************************/
+    
+    // Pretty print
+    encoded.clear();
+    StringSource(cipher, true,
+                 new HexEncoder(
+                                new StringSink(encoded)
+                                ) // HexEncoder
+                 ); // StringSource
+    cout << "cipher text: " << encoded << endl;
+    
+    /*********************************\
+     \*********************************/
+    
+    try
+    {
+        GCM< AES >::Decryption d;
+        d.SetKeyWithIV(key, key.size(), iv, iv.size());
+        
+        // The StreamTransformationFilter removes
+        //  padding as required.
+        StringSource s(cipher, true, 
+                       new AuthenticatedDecryptionFilter(d,
+                                                         new StringSink(recovered)
+                                                         ) // StreamTransformationFilter
+                       ); // StringSource
+        
+        cout << "recovered text: " << recovered << endl;
+    }
+    catch(const CryptoPP::Exception& e)
+    {
+        cerr << e.what() << endl;
+        exit(1);
+    }
+    
+    /*********************************\
+     \*********************************/
+    
+    return 0;
+}
+
+
+
+
 int main() {
     
+    cout << "BEGINING Creating PUBLIC AND PRIVATE KEY" << endl;
     create_key();
+    
+    
+    cout << "BEGINING Simple AES Encyption " << endl;
     generate_aes_key();
+    
+    
+    cout << "BEGINING FINAL EXAMPLE" << endl;
+    
+    book_example();
+    
     return 0;
 }
