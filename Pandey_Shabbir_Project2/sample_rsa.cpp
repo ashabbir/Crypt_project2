@@ -169,8 +169,10 @@ void generate_aes_key(){
 
 
 /***************
+ ANSHUL I WANT YOU TO LOOK AT THIS SEE HOW THIS WORKS
+ Just do a quick read on this article
+ http://www.cryptopp.com/wiki/Authenticated_Encryption
  **************/
-//int book_example(int argc, char* argv[])
 int book_example()
 {
     AutoSeededRandomPool prng;
@@ -274,6 +276,13 @@ int book_example()
     
     return 0;
 }
+
+
+
+
+
+
+
 
 
 
