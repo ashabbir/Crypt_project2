@@ -13,8 +13,11 @@ using namespace std;
 #include "cryptlib.h"
 #include "rsa.h"
 #include "osrng.h"
+#include "files.h"
+#include "base64.h"
 
 using namespace CryptoPP;
+
 
 void sample_key() {
     ///////////////////////////////////////
@@ -24,7 +27,7 @@ void sample_key() {
     ///////////////////////////////////////
     // Generate Parameters
     InvertibleRSAFunction params;
-    params.GenerateRandomWithKeySize(rng, 3072);
+    params.GenerateRandomWithKeySize(rng, 256);
     
     ///////////////////////////////////////
     // Generated Parameters
@@ -48,10 +51,17 @@ void sample_key() {
     // Create Keys
     RSA::PrivateKey privateKey(params);
     RSA::PublicKey publicKey(params);
+    
+    Base64Encoder pubkeysink(new FileSink("/Users/avp/Dropbox/Projects/Cryptography/Proj2/Crypt_project2/Pandey_Shabbir_Project2/pubkey.txt"));
+    publicKey.DEREncode(pubkeysink);
+    pubkeysink.MessageEnd();
+    cout << "file saved";
 }
 
 int main() {
     
     sample_key();
     return 0;
+    
+
 }
